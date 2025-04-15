@@ -47,7 +47,7 @@ export const AppSidebar: React.FC = () => {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild active={isActive('/dashboard')}>
+                <SidebarMenuButton asChild isActive={isActive('/dashboard')}>
                   <Link to="/dashboard">
                     <LayoutDashboard className="h-5 w-5" />
                     <span>Dashboard</span>
@@ -55,7 +55,7 @@ export const AppSidebar: React.FC = () => {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild active={isActive('/timesheet')}>
+                <SidebarMenuButton asChild isActive={isActive('/timesheet')}>
                   <Link to="/timesheet">
                     <Clock className="h-5 w-5" />
                     <span>Timesheet</span>
@@ -63,7 +63,7 @@ export const AppSidebar: React.FC = () => {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild active={isActive('/appraisal')}>
+                <SidebarMenuButton asChild isActive={isActive('/appraisal')}>
                   <Link to="/appraisal">
                     <FileText className="h-5 w-5" />
                     <span>Appraisal Tasks</span>
@@ -72,7 +72,7 @@ export const AppSidebar: React.FC = () => {
               </SidebarMenuItem>
               {user.role === 'admin' && (
                 <SidebarMenuItem>
-                  <SidebarMenuButton asChild active={isActive('/admin')}>
+                  <SidebarMenuButton asChild isActive={isActive('/admin')}>
                     <Link to="/admin">
                       <ShieldCheck className="h-5 w-5" />
                       <span>Admin Review</span>
@@ -88,7 +88,7 @@ export const AppSidebar: React.FC = () => {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild active={isActive('/settings')}>
+                <SidebarMenuButton asChild isActive={isActive('/settings')}>
                   <Link to="/settings">
                     <Settings className="h-5 w-5" />
                     <span>Settings</span>
@@ -96,7 +96,7 @@ export const AppSidebar: React.FC = () => {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild active={isActive('/help')}>
+                <SidebarMenuButton asChild isActive={isActive('/help')}>
                   <Link to="/help">
                     <HelpCircle className="h-5 w-5" />
                     <span>Help</span>
