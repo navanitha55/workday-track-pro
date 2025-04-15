@@ -77,7 +77,7 @@ const mockAppraisalTasks = [
     id: 6,
     title: 'Mentoring Program',
     category: 'service',
-    description: 'Participate in the institution's student mentoring program',
+    description: "Participate in the institution's student mentoring program",
     completed: true,
     documents: ['mentoring_report.pdf'],
     deadline: '2023-04-30',
