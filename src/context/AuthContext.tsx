@@ -29,29 +29,71 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const MOCK_USERS: User[] = [
   {
     id: '1',
-    name: 'John Doe',
+    name: 'Abirami',
     email: 'staff@example.com',
     role: 'staff',
     department: 'Computer Science'
   },
   {
     id: '2',
-    name: 'Jane Smith',
+    name: 'Nandhini',
     email: 'hod@example.com',
     role: 'hod',
     department: 'Computer Science'
   },
   {
     id: '3',
-    name: 'Michael Johnson',
+    name: 'Muruganandham',
     email: 'principal@example.com',
     role: 'principal'
   },
   {
     id: '4',
-    name: 'Sarah Williams',
+    name: 'Aruna',
     email: 'admin@example.com',
     role: 'admin'
+  },
+  {
+    id: '5',
+    name: 'Kavitha',
+    email: 'kavitha@example.com',
+    role: 'staff',
+    department: 'Computer Science'
+  },
+  {
+    id: '6',
+    name: 'Priya',
+    email: 'priya@example.com',
+    role: 'staff',
+    department: 'Information Technology'
+  },
+  {
+    id: '7',
+    name: 'Sumitha',
+    email: 'sumitha@example.com',
+    role: 'staff',
+    department: 'Electronics'
+  },
+  {
+    id: '8',
+    name: 'Santhosh',
+    email: 'santhosh@example.com',
+    role: 'staff',
+    department: 'Mechanical'
+  },
+  {
+    id: '9',
+    name: 'Vinith',
+    email: 'vinith@example.com',
+    role: 'staff',
+    department: 'Civil'
+  },
+  {
+    id: '10',
+    name: 'Suresh',
+    email: 'suresh@example.com',
+    role: 'staff',
+    department: 'Electrical'
   }
 ];
 

@@ -33,7 +33,7 @@ export const Header: React.FC = () => {
           </Button>
         </SidebarTrigger>
         <h1 className="text-xl font-semibold">
-          WorkDay Track Pro
+          Sri Shanmugha Educational Institutions
         </h1>
       </div>
 

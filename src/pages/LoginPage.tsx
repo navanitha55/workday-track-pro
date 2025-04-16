@@ -14,7 +14,7 @@ const LoginPage: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background">
       <div className="text-center mb-6">
-        <h1 className="text-3xl font-bold text-primary">WorkDay Track Pro</h1>
+        <h1 className="text-3xl font-bold text-primary">Sri Shanmugha Educational Institutions</h1>
         <p className="text-muted-foreground">Staff Timesheet & Appraisal Management</p>
       </div>
       <LoginForm />

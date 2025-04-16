@@ -10,7 +10,24 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 import { Checkbox } from '@/components/ui/checkbox';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/components/ui/use-toast';
-import { CheckCircle2, FileUp, SendHorizontal, FilePlus2, FileCheck2, Clock } from 'lucide-react';
+import { 
+  CheckCircle2, 
+  FileUp, 
+  SendHorizontal, 
+  FilePlus2, 
+  FileCheck2, 
+  Clock, 
+  Eye,
+  X
+} from 'lucide-react';
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogDescription,
+  DialogClose
+} from '@/components/ui/dialog';
 
 // Mock appraisal categories
 const taskCategories = [
@@ -27,7 +44,7 @@ const mockAppraisalTasks = [
     id: 1,
     title: 'Lecture Materials',
     category: 'teaching',
-    description: 'Prepare and update lecture materials for all assigned courses',
+    description: "Prepare and update lecture materials for all assigned courses",
     completed: true,
     documents: ['lecture_slides.pdf'],
     deadline: '2023-05-01',
@@ -37,7 +54,7 @@ const mockAppraisalTasks = [
     id: 2,
     title: 'Student Feedback Analysis',
     category: 'teaching',
-    description: 'Analyze student feedback from previous semester and implement improvements',
+    description: "Analyze student feedback from previous semester and implement improvements",
     completed: true,
     documents: ['feedback_analysis.pdf'],
     deadline: '2023-04-15',
@@ -95,6 +112,7 @@ export const AppraisalTasks: React.FC = () => {
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmittingAppraisal, setIsSubmittingAppraisal] = useState(false);
+  const [viewingDocument, setViewingDocument] = useState<string | null>(null);
   
   const { toast } = useToast();
   
@@ -168,6 +186,10 @@ export const AppraisalTasks: React.FC = () => {
       title: "Document Uploaded",
       description: "Your document has been attached to the task",
     });
+  };
+  
+  const handleViewDocument = (document: string) => {
+    setViewingDocument(document);
   };
   
   const handleSubmitAppraisal = () => {
@@ -311,11 +333,22 @@ export const AppraisalTasks: React.FC = () => {
                         <div className="text-xs text-muted-foreground font-medium mb-1">Attached Documents:</div>
                         <div className="space-y-1">
                           {task.documents.map((doc, index) => (
-                            <div key={index} className="flex items-center gap-2 text-sm">
-                              <div className="bg-accent rounded p-1">
-                                <FileCheck2 className="h-3 w-3" />
+                            <div key={index} className="flex items-center justify-between text-sm bg-accent/30 rounded-md p-2">
+                              <div className="flex items-center gap-2">
+                                <div className="bg-accent rounded p-1">
+                                  <FileCheck2 className="h-3 w-3" />
+                                </div>
+                                <span>{doc}</span>
                               </div>
-                              <span>{doc}</span>
+                              <Button 
+                                size="sm" 
+                                variant="ghost" 
+                                onClick={() => handleViewDocument(doc)}
+                                className="h-7 px-2"
+                              >
+                                <Eye className="h-3 w-3 mr-1" />
+                                View
+                              </Button>
                             </div>
                           ))}
                         </div>
@@ -351,6 +384,43 @@ export const AppraisalTasks: React.FC = () => {
             </div>
           )}
         </TabsContent>
+        
+        {/* Document Viewer Dialog */}
+        <Dialog open={!!viewingDocument} onOpenChange={(open) => !open && setViewingDocument(null)}>
+          <DialogContent className="max-w-3xl">
+            <DialogHeader>
+              <DialogTitle className="flex justify-between items-center">
+                <span>Document: {viewingDocument}</span>
+                <DialogClose asChild>
+                  <Button variant="ghost" size="icon">
+                    <X className="h-4 w-4" />
+                  </Button>
+                </DialogClose>
+              </DialogTitle>
+              <DialogDescription>
+                Viewing uploaded document
+              </DialogDescription>
+            </DialogHeader>
+            <div className="bg-muted p-4 rounded-md min-h-[400px] flex flex-col items-center justify-center">
+              <div className="max-w-md mx-auto bg-card p-8 rounded-lg shadow-lg">
+                <div className="text-center mb-6">
+                  <FileCheck2 className="h-12 w-12 text-primary mx-auto mb-2" />
+                  <h2 className="text-xl font-semibold">{viewingDocument}</h2>
+                  <p className="text-muted-foreground text-sm">Document from Sri Shanmugha Educational Institutions</p>
+                </div>
+                
+                <div className="space-y-4 text-sm">
+                  <p>This is a preview of the document content. In a real application, the actual PDF or document content would be displayed here.</p>
+                  <p>The document contains important information related to the appraisal task and has been successfully uploaded to the system.</p>
+                </div>
+                
+                <div className="mt-6 flex justify-center">
+                  <Button className="w-full">Download Document</Button>
+                </div>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
         
         <TabsContent value="completed" className="space-y-4 mt-6">
           {/* This tab uses filteredTasks which is handled by the activeTab state */}

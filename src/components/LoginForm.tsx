@@ -25,7 +25,7 @@ export const LoginForm: React.FC = () => {
       await login(email, password);
       toast({
         title: "Login successful",
-        description: "Welcome to WorkDay Track Pro!",
+        description: "Welcome to Sri Shanmugha Educational Institutions!",
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to login');
@@ -39,7 +39,7 @@ export const LoginForm: React.FC = () => {
       <CardHeader>
         <CardTitle className="text-2xl">Login</CardTitle>
         <CardDescription>
-          Access your WorkDay Track Pro account
+          Access your Sri Shanmugha account
         </CardDescription>
       </CardHeader>
       <CardContent>

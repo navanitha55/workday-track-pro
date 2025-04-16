@@ -109,7 +109,7 @@ export const AppSidebar: React.FC = () => {
       </SidebarContent>
       <SidebarFooter>
         <div className="p-4 text-xs text-center text-sidebar-foreground/60">
-          WorkDay Track Pro v1.0
+          Sri Shanmugha Educational Institutions v1.0
         </div>
       </SidebarFooter>
     </Sidebar>
