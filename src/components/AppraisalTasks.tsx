@@ -6,28 +6,12 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/components/ui/use-toast';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from '@/components/ui/dialog';
 import { useAuth } from '../context/AuthContext';
-import { 
-  CheckCircle2, 
-  FileUp, 
-  SendHorizontal, 
-  FilePlus2, 
-  FileCheck2, 
-  Clock, 
-  Eye,
-  X
-} from 'lucide-react';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogDescription,
-  DialogClose
-} from '@/components/ui/dialog';
+import { FilePlus2, SendHorizontal, CheckCircle2, X } from 'lucide-react';
+import { TaskList } from './task/TaskList';
 
 const taskCategories = [
   { value: 'students-related-external', label: 'Students Related - External' },
@@ -366,116 +350,12 @@ export const AppraisalTasks: React.FC = () => {
         </TabsList>
         
         <TabsContent value="all-tasks" className="space-y-4 mt-6">
-          {filteredTasks.length > 0 ? (
-            filteredTasks.map(task => (
-              <Card key={task.id} className={`overflow-hidden ${task.completed ? 'border-l-4 border-l-success' : ''}`}>
-                <CardHeader className="p-4 pb-2">
-                  <div className="flex justify-between items-start">
-                    <div className="flex items-center gap-2">
-                      <Checkbox 
-                        id={`task-${task.id}`}
-                        checked={task.completed}
-                        onCheckedChange={(checked) => 
-                          handleTaskCompletion(task.id, checked === true)
-                        }
-                      />
-                      <Label 
-                        htmlFor={`task-${task.id}`}
-                        className={`font-medium ${task.completed ? 'line-through text-muted-foreground' : ''}`}
-                      >
-                        {task.title}
-                      </Label>
-                    </div>
-                    <div className="flex items-center">
-                      <span className={`text-xs rounded-full px-2 py-1 ${
-                        task.status === 'completed' 
-                          ? 'bg-success/20 text-success' 
-                          : task.status === 'in-progress'
-                            ? 'bg-warning/20 text-warning'
-                            : 'bg-muted-foreground/20 text-muted-foreground'
-                      }`}>
-                        {task.status === 'completed' 
-                          ? 'Completed' 
-                          : task.status === 'in-progress'
-                            ? 'In Progress'
-                            : 'Not Started'
-                        }
-                      </span>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="p-4 pt-2">
-                  <div className="space-y-2">
-                    <div className="text-sm">
-                      <span className="text-muted-foreground">Category: </span>
-                      <span className="font-medium">
-                        {taskCategories.find(c => c.value === task.category)?.label || task.category}
-                      </span>
-                    </div>
-                    <p className="text-sm">{task.description}</p>
-                    
-                    <div className="grid grid-cols-2 gap-4 mt-2">
-                      <div className="text-sm">
-                        <span className="text-muted-foreground">Score: </span>
-                        <span className="font-medium">{task.score}/{task.totalMarks}</span>
-                      </div>
-                    </div>
-                    
-                    {task.documents.length > 0 && (
-                      <div className="mt-3">
-                        <div className="text-xs text-muted-foreground font-medium mb-1">Attached Documents:</div>
-                        <div className="space-y-1">
-                          {task.documents.map((doc, index) => (
-                            <div key={index} className="flex items-center justify-between text-sm bg-accent/30 rounded-md p-2">
-                              <div className="flex items-center gap-2">
-                                <div className="bg-accent rounded p-1">
-                                  <FileCheck2 className="h-3 w-3" />
-                                </div>
-                                <span>{doc}</span>
-                              </div>
-                              <Button 
-                                size="sm" 
-                                variant="ghost" 
-                                onClick={() => handleViewDocument(doc)}
-                                className="h-7 px-2"
-                              >
-                                <Eye className="h-3 w-3 mr-1" />
-                                View
-                              </Button>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    
-                    <div className="flex items-center justify-between pt-2">
-                      <div className="text-xs text-muted-foreground flex items-center">
-                        <Clock className="h-3 w-3 mr-1" />
-                        Deadline: {task.deadline}
-                      </div>
-                      
-                      <Button 
-                        size="sm" 
-                        variant="outline"
-                        onClick={() => handleFileUpload(task.id)}
-                      >
-                        <FileUp className="h-3 w-3 mr-1" />
-                        Upload Document
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))
-          ) : (
-            <div className="text-center p-12">
-              <CheckCircle2 className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-              <h3 className="text-lg font-medium">No tasks found</h3>
-              <p className="text-sm text-muted-foreground">
-                Add some tasks to start tracking your appraisal progress
-              </p>
-            </div>
-          )}
+          <TaskList 
+            tasks={filteredTasks}
+            onTaskCompletion={handleTaskCompletion}
+            onFileUpload={handleFileUpload}
+            onViewDocument={handleViewDocument}
+          />
         </TabsContent>
         
         <Dialog open={!!viewingDocument} onOpenChange={(open) => !open && setViewingDocument(null)}>
