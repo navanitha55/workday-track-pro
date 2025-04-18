@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { useAuth } from '../context/AuthContext';
 import { FilePlus2, SendHorizontal, CheckCircle2, X } from 'lucide-react';
 import { TaskList } from './task/TaskList';
+import { CategoryBox } from './task/CategoryBox';
 
 const taskCategories = [
   { value: 'students-related-external', label: 'Students Related - External' },
@@ -281,6 +282,44 @@ export const AppraisalTasks: React.FC = () => {
             ? task.category === 'institution-related-external'
             : true
       );
+
+  const categories = [
+    {
+      id: 'students-related-external',
+      title: 'Students Regular - External',
+      color: '#F2FCE2', // Soft green
+    },
+    {
+      id: 'faculty-related-internal',
+      title: 'Faculty Regular - Internal',
+      color: '#E5DEFF', // Soft purple
+    },
+    {
+      id: 'faculty-related-external',
+      title: 'Faculty Regular - External',
+      color: '#D3E4FD', // Soft blue
+    },
+    {
+      id: 'institution-related-internal',
+      title: 'Institution Related - Internal',
+      color: '#FFDEE2', // Soft pink
+    },
+    {
+      id: 'institution-related-external',
+      title: 'Institution Related - External',
+      color: '#FDE1D3', // Soft peach
+    },
+  ];
+
+  const getCategoryStats = (categoryId: string) => {
+    const categoryTasks = tasks.filter(task => task.category === categoryId);
+    const completed = categoryTasks.filter(task => task.completed).length;
+    return {
+      total: categoryTasks.length,
+      completed,
+      pending: categoryTasks.length - completed
+    };
+  };
   
   return (
     <div className="space-y-8">
@@ -291,6 +330,7 @@ export const AppraisalTasks: React.FC = () => {
         </p>
       </div>
       
+      {/* Progress Card */}
       <Card>
         <CardHeader>
           <CardTitle>Appraisal Progress</CardTitle>
@@ -336,6 +376,27 @@ export const AppraisalTasks: React.FC = () => {
         </CardContent>
       </Card>
       
+      {/* Category Boxes */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {categories.map(category => {
+          const stats = getCategoryStats(category.id);
+          return (
+            <CategoryBox
+              key={category.id}
+              title={category.title}
+              color={category.color}
+              totalTasks={stats.total}
+              completedTasks={stats.completed}
+              pendingTasks={stats.pending}
+              onClick={() => {
+                setActiveTab(category.id);
+              }}
+            />
+          );
+        })}
+      </div>
+      
+      {/* Tasks List */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid grid-cols-7">
           <TabsTrigger value="all-tasks">All Tasks</TabsTrigger>
