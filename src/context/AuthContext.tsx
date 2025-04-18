@@ -20,6 +20,7 @@ interface AuthContextType {
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
+  canAccessUserDetails: (userToAccess: User) => boolean;
 }
 
 // Create context
@@ -142,6 +143,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem('user');
   };
 
+  // Function to check if current user can access details of another user
+  const canAccessUserDetails = (userToAccess: User) => {
+    if (!user) return false;
+    
+    switch (user.role) {
+      case 'admin':
+        // Admin can access all users
+        return true;
+      case 'principal':
+        // Principal can access all users
+        return true;
+      case 'hod':
+        // HOD can access staff in their department
+        return (
+          userToAccess.role === 'staff' && 
+          userToAccess.department === user.department
+        );
+      case 'staff':
+        // Staff can only access their own details
+        return userToAccess.id === user.id;
+      default:
+        return false;
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -149,7 +175,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isAuthenticated: !!user,
         isLoading,
         login,
-        logout
+        logout,
+        canAccessUserDetails
       }}
     >
       {children}

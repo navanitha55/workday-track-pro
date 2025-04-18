@@ -70,15 +70,15 @@ export const AppSidebar: React.FC = () => {
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-              {user.role === 'admin' && (
+              {(user.role === 'admin' || user.role === 'principal' || user.role === 'hod') && (
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild isActive={isActive('/admin')}>
                     <Link to="/admin">
                       <ShieldCheck className="h-5 w-5" />
-                      <span>Admin Review</span>
+                      <span>Staff Review</span>
                     </Link>
                   </SidebarMenuButton>
-                </SidebarMenuItem>
+              </SidebarMenuItem>
               )}
             </SidebarMenu>
           </SidebarGroupContent>

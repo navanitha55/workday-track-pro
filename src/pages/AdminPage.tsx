@@ -7,12 +7,21 @@ import { AdminReview } from '../components/AdminReview';
 const AdminPage: React.FC = () => {
   const { user } = useAuth();
   
-  // Redirect non-admin users
-  if (user?.role !== 'admin') {
+  // Allow access to admin, principal, and hod users only
+  if (!user || (user.role !== 'admin' && user.role !== 'principal' && user.role !== 'hod')) {
     return <Navigate to="/dashboard" replace />;
   }
   
-  return <AdminReview />;
+  return (
+    <div>
+      <h2 className="text-3xl font-bold tracking-tight mb-6">
+        {user.role === 'principal' ? 'All Staff Review' : 
+         user.role === 'hod' ? 'Department Staff Review' : 
+         'Administration Review'}
+      </h2>
+      <AdminReview />
+    </div>
+  );
 };
 
 export default AdminPage;

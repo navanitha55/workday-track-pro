@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 import { Checkbox } from '@/components/ui/checkbox';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/components/ui/use-toast';
+import { useAuth } from '../context/AuthContext';
 import { 
   CheckCircle2, 
   FileUp, 
@@ -29,42 +30,46 @@ import {
   DialogClose
 } from '@/components/ui/dialog';
 
-// Mock appraisal categories
+// Updated appraisal categories based on the document
 const taskCategories = [
-  { value: 'teaching', label: 'Teaching & Learning' },
-  { value: 'research', label: 'Research & Publications' },
-  { value: 'professional', label: 'Professional Development' },
-  { value: 'service', label: 'Institutional Service' },
-  { value: 'extension', label: 'Extension Activities' },
+  { value: 'students-related-external', label: 'Students Related - External' },
+  { value: 'faculty-related-internal', label: 'Faculty Related - Internal' },
+  { value: 'faculty-related-external', label: 'Faculty Related - External' },
 ];
 
-// Mock appraisal tasks
+// Mock appraisal tasks based on the document
 const mockAppraisalTasks = [
   {
     id: 1,
-    title: 'Lecture Materials',
-    category: 'teaching',
-    description: "Prepare and update lecture materials for all assigned courses",
+    title: 'Arrange Internship',
+    category: 'students-related-external',
+    description: "To arrange Internship (Minimum 20 students)",
+    compliance: "1 / Semester",
+    score: 15,
     completed: true,
-    documents: ['lecture_slides.pdf'],
+    documents: ['internship_report.pdf'],
     deadline: '2023-05-01',
     status: 'completed',
   },
   {
     id: 2,
-    title: 'Student Feedback Analysis',
-    category: 'teaching',
-    description: "Analyze student feedback from previous semester and implement improvements",
+    title: 'Value Added Courses',
+    category: 'students-related-external',
+    description: "To organize core related Value Added Courses",
+    compliance: "1 / Semester",
+    score: 15,
     completed: true,
-    documents: ['feedback_analysis.pdf'],
+    documents: ['vac_report.pdf'],
     deadline: '2023-04-15',
     status: 'completed',
   },
   {
     id: 3,
-    title: 'NPTEL Certification',
-    category: 'professional',
-    description: 'Complete at least one NPTEL certification course relevant to teaching area',
+    title: 'Course File Preparation',
+    category: 'faculty-related-internal',
+    description: 'Preparation of the Course File',
+    compliance: 'One Week prior to the commencement of classes',
+    score: 30,
     completed: false,
     documents: [],
     deadline: '2023-06-30',
@@ -72,19 +77,23 @@ const mockAppraisalTasks = [
   },
   {
     id: 4,
-    title: 'Research Paper Publication',
-    category: 'research',
-    description: 'Publish at least one research paper in a recognized journal or conference',
+    title: 'Final Year Project Guidance',
+    category: 'faculty-related-internal',
+    description: 'Final Year Project Guidance',
+    compliance: 'Minimum two/year',
+    score: 20,
     completed: false,
-    documents: ['draft_paper.pdf'],
+    documents: ['project_guide.pdf'],
     deadline: '2023-07-15',
     status: 'in-progress',
   },
   {
     id: 5,
-    title: 'Workshop Attendance',
-    category: 'professional',
-    description: 'Attend at least one professional development workshop',
+    title: 'Book/Book Chapter Publications',
+    category: 'faculty-related-external',
+    description: 'Publish Book or Book Chapter',
+    compliance: '1 / Year',
+    score: 30,
     completed: false,
     documents: [],
     deadline: '2023-05-30',
@@ -92,11 +101,13 @@ const mockAppraisalTasks = [
   },
   {
     id: 6,
-    title: 'Mentoring Program',
-    category: 'service',
-    description: "Participate in the institution's student mentoring program",
+    title: 'NPTEL Certification',
+    category: 'faculty-related-external',
+    description: "Complete NPTEL & Other approved institutions certification",
+    compliance: '1 / Semester',
+    score: 20,
     completed: true,
-    documents: ['mentoring_report.pdf'],
+    documents: ['nptel_certificate.pdf'],
     deadline: '2023-04-30',
     status: 'completed',
   },
@@ -108,6 +119,8 @@ export const AppraisalTasks: React.FC = () => {
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [newTaskCategory, setNewTaskCategory] = useState('');
   const [newTaskDescription, setNewTaskDescription] = useState('');
+  const [newTaskCompliance, setNewTaskCompliance] = useState('');
+  const [newTaskScore, setNewTaskScore] = useState<number>(0);
   const [newTaskDeadline, setNewTaskDeadline] = useState('');
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -115,6 +128,7 @@ export const AppraisalTasks: React.FC = () => {
   const [viewingDocument, setViewingDocument] = useState<string | null>(null);
   
   const { toast } = useToast();
+  const { user } = useAuth();
   
   // Calculate progress
   const completedTasks = tasks.filter(task => task.completed).length;
@@ -132,6 +146,8 @@ export const AppraisalTasks: React.FC = () => {
         title: newTaskTitle,
         category: newTaskCategory,
         description: newTaskDescription,
+        compliance: newTaskCompliance,
+        score: newTaskScore,
         completed: false,
         documents: [] as string[],
         deadline: newTaskDeadline,
@@ -144,6 +160,8 @@ export const AppraisalTasks: React.FC = () => {
       setNewTaskTitle('');
       setNewTaskCategory('');
       setNewTaskDescription('');
+      setNewTaskCompliance('');
+      setNewTaskScore(0);
       setNewTaskDeadline('');
       
       toast({
@@ -214,6 +232,12 @@ export const AppraisalTasks: React.FC = () => {
           ? task.completed 
           : activeTab === 'pending' 
             ? !task.completed 
+            : activeTab === 'students-related-external'
+            ? task.category === 'students-related-external'
+            : activeTab === 'faculty-related-internal'
+            ? task.category === 'faculty-related-internal'
+            : activeTab === 'faculty-related-external'
+            ? task.category === 'faculty-related-external'
             : true
       );
   
@@ -272,10 +296,13 @@ export const AppraisalTasks: React.FC = () => {
       </Card>
       
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid grid-cols-4">
+        <TabsList className="grid grid-cols-7">
           <TabsTrigger value="all-tasks">All Tasks</TabsTrigger>
           <TabsTrigger value="completed">Completed</TabsTrigger>
           <TabsTrigger value="pending">Pending</TabsTrigger>
+          <TabsTrigger value="students-related-external">Students External</TabsTrigger>
+          <TabsTrigger value="faculty-related-internal">Faculty Internal</TabsTrigger>
+          <TabsTrigger value="faculty-related-external">Faculty External</TabsTrigger>
           <TabsTrigger value="add-task">Add Task</TabsTrigger>
         </TabsList>
         
@@ -327,6 +354,17 @@ export const AppraisalTasks: React.FC = () => {
                       </span>
                     </div>
                     <p className="text-sm">{task.description}</p>
+                    
+                    <div className="grid grid-cols-2 gap-4 mt-2">
+                      <div className="text-sm">
+                        <span className="text-muted-foreground">Compliance: </span>
+                        <span className="font-medium">{task.compliance}</span>
+                      </div>
+                      <div className="text-sm">
+                        <span className="text-muted-foreground">Score: </span>
+                        <span className="font-medium">{task.score}</span>
+                      </div>
+                    </div>
                     
                     {task.documents.length > 0 && (
                       <div className="mt-3">
@@ -402,16 +440,15 @@ export const AppraisalTasks: React.FC = () => {
               </DialogDescription>
             </DialogHeader>
             <div className="bg-muted p-4 rounded-md min-h-[400px] flex flex-col items-center justify-center">
-              <div className="max-w-md mx-auto bg-card p-8 rounded-lg shadow-lg">
-                <div className="text-center mb-6">
-                  <FileCheck2 className="h-12 w-12 text-primary mx-auto mb-2" />
+              <div className="max-w-full mx-auto bg-card p-4 rounded-lg shadow-lg">
+                <img 
+                  src="/lovable-uploads/788cbcd8-5b61-4411-ad67-9ec3ca04142a.png" 
+                  alt="Appraisal Document" 
+                  className="w-full h-auto object-contain max-h-[500px]"
+                />
+                <div className="text-center mt-4">
                   <h2 className="text-xl font-semibold">{viewingDocument}</h2>
-                  <p className="text-muted-foreground text-sm">Document from Sri Shanmugha Educational Institutions</p>
-                </div>
-                
-                <div className="space-y-4 text-sm">
-                  <p>This is a preview of the document content. In a real application, the actual PDF or document content would be displayed here.</p>
-                  <p>The document contains important information related to the appraisal task and has been successfully uploaded to the system.</p>
+                  <p className="text-muted-foreground text-sm">Faculty Semester Performance Report</p>
                 </div>
                 
                 <div className="mt-6 flex justify-center">
@@ -443,6 +480,46 @@ export const AppraisalTasks: React.FC = () => {
               <h3 className="text-lg font-medium">No pending tasks</h3>
               <p className="text-sm text-muted-foreground">
                 All of your tasks have been completed
+              </p>
+            </div>
+          )}
+        </TabsContent>
+        
+        {/* Category specific tabs */}
+        <TabsContent value="students-related-external" className="space-y-4 mt-6">
+          {/* This tab uses filteredTasks which is handled by the activeTab state */}
+          {filteredTasks.length === 0 && (
+            <div className="text-center p-12">
+              <CheckCircle2 className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+              <h3 className="text-lg font-medium">No Students Related - External tasks</h3>
+              <p className="text-sm text-muted-foreground">
+                Add tasks in this category to see them here
+              </p>
+            </div>
+          )}
+        </TabsContent>
+        
+        <TabsContent value="faculty-related-internal" className="space-y-4 mt-6">
+          {/* This tab uses filteredTasks which is handled by the activeTab state */}
+          {filteredTasks.length === 0 && (
+            <div className="text-center p-12">
+              <CheckCircle2 className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+              <h3 className="text-lg font-medium">No Faculty Related - Internal tasks</h3>
+              <p className="text-sm text-muted-foreground">
+                Add tasks in this category to see them here
+              </p>
+            </div>
+          )}
+        </TabsContent>
+        
+        <TabsContent value="faculty-related-external" className="space-y-4 mt-6">
+          {/* This tab uses filteredTasks which is handled by the activeTab state */}
+          {filteredTasks.length === 0 && (
+            <div className="text-center p-12">
+              <CheckCircle2 className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+              <h3 className="text-lg font-medium">No Faculty Related - External tasks</h3>
+              <p className="text-sm text-muted-foreground">
+                Add tasks in this category to see them here
               </p>
             </div>
           )}
@@ -503,6 +580,31 @@ export const AppraisalTasks: React.FC = () => {
                   />
                 </div>
                 
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="task-compliance">Compliance</Label>
+                    <Input
+                      id="task-compliance"
+                      placeholder="e.g. 1 / Semester"
+                      value={newTaskCompliance}
+                      onChange={(e) => setNewTaskCompliance(e.target.value)}
+                      required
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="task-score">Score</Label>
+                    <Input
+                      id="task-score"
+                      type="number"
+                      placeholder="Enter score points"
+                      value={newTaskScore || ''}
+                      onChange={(e) => setNewTaskScore(parseInt(e.target.value) || 0)}
+                      required
+                    />
+                  </div>
+                </div>
+                
                 <div className="space-y-2">
                   <Label htmlFor="task-deadline">Deadline</Label>
                   <Input
@@ -522,6 +624,8 @@ export const AppraisalTasks: React.FC = () => {
                   setNewTaskTitle('');
                   setNewTaskCategory('');
                   setNewTaskDescription('');
+                  setNewTaskCompliance('');
+                  setNewTaskScore(0);
                   setNewTaskDeadline('');
                 }}
               >
