@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -30,14 +29,14 @@ import {
   DialogClose
 } from '@/components/ui/dialog';
 
-// Updated appraisal categories based on the document
 const taskCategories = [
   { value: 'students-related-external', label: 'Students Related - External' },
   { value: 'faculty-related-internal', label: 'Faculty Related - Internal' },
   { value: 'faculty-related-external', label: 'Faculty Related - External' },
+  { value: 'institution-related-internal', label: 'Institution Related - Internal' },
+  { value: 'institution-related-external', label: 'Institution Related - External' }
 ];
 
-// Mock appraisal tasks based on the document
 const mockAppraisalTasks = [
   {
     id: 1,
@@ -46,10 +45,11 @@ const mockAppraisalTasks = [
     description: "To arrange Internship (Minimum 20 students)",
     compliance: "1 / Semester",
     score: 15,
-    completed: true,
-    documents: ['internship_report.pdf'],
-    deadline: '2023-05-01',
-    status: 'completed',
+    totalMarks: 30,
+    completed: false,
+    documents: [],
+    deadline: '2024-06-30',
+    status: 'not-started',
   },
   {
     id: 2,
@@ -58,10 +58,11 @@ const mockAppraisalTasks = [
     description: "To organize core related Value Added Courses",
     compliance: "1 / Semester",
     score: 15,
-    completed: true,
-    documents: ['vac_report.pdf'],
-    deadline: '2023-04-15',
-    status: 'completed',
+    totalMarks: 30,
+    completed: false,
+    documents: [],
+    deadline: '2024-06-30',
+    status: 'not-started',
   },
   {
     id: 3,
@@ -70,10 +71,11 @@ const mockAppraisalTasks = [
     description: 'Preparation of the Course File',
     compliance: 'One Week prior to the commencement of classes',
     score: 30,
+    totalMarks: 50,
     completed: false,
     documents: [],
-    deadline: '2023-06-30',
-    status: 'in-progress',
+    deadline: '2024-05-15',
+    status: 'not-started',
   },
   {
     id: 4,
@@ -82,35 +84,90 @@ const mockAppraisalTasks = [
     description: 'Final Year Project Guidance',
     compliance: 'Minimum two/year',
     score: 20,
+    totalMarks: 50,
     completed: false,
-    documents: ['project_guide.pdf'],
-    deadline: '2023-07-15',
-    status: 'in-progress',
+    documents: [],
+    deadline: '2024-07-30',
+    status: 'not-started',
   },
   {
     id: 5,
     title: 'Book/Book Chapter Publications',
     category: 'faculty-related-external',
-    description: 'Publish Book or Book Chapter',
+    description: 'Book/Book chapter Publications',
     compliance: '1 / Year',
     score: 30,
+    totalMarks: 140,
     completed: false,
     documents: [],
-    deadline: '2023-05-30',
+    deadline: '2024-12-31',
     status: 'not-started',
   },
   {
     id: 6,
     title: 'NPTEL Certification',
     category: 'faculty-related-external',
-    description: "Complete NPTEL & Other approved institutions certification",
+    description: "NPTEL & Other approved institutions certification",
     compliance: '1 / Semester',
     score: 20,
-    completed: true,
-    documents: ['nptel_certificate.pdf'],
-    deadline: '2023-04-30',
-    status: 'completed',
+    totalMarks: 140,
+    completed: false,
+    documents: [],
+    deadline: '2024-06-30',
+    status: 'not-started',
   },
+  {
+    id: 7,
+    title: 'Result Secured',
+    category: 'institution-related-internal',
+    description: 'Result secured (Min 85% for theory 100% for Lab) ( Unit Test / Terminal Test / University Exams)',
+    compliance: 'Always',
+    score: 30,
+    totalMarks: 30,
+    completed: false,
+    documents: [],
+    deadline: '2024-06-30',
+    status: 'not-started',
+  },
+  {
+    id: 8,
+    title: 'Sponsored Programs',
+    category: 'institution-related-external',
+    description: 'To organize Sponsored (FDP / AKTE / DST / CSIR)',
+    compliance: '1 / year',
+    score: 20,
+    totalMarks: 100,
+    completed: false,
+    documents: [],
+    deadline: '2024-12-31',
+    status: 'not-started',
+  },
+  {
+    id: 9,
+    title: 'Research Projects',
+    category: 'institution-related-external',
+    description: 'To undergo Sponsored Research Projects / Consultancy Projects',
+    compliance: '1 / year',
+    score: 30,
+    totalMarks: 100,
+    completed: false,
+    documents: [],
+    deadline: '2024-12-31',
+    status: 'not-started',
+  },
+  {
+    id: 10,
+    title: 'Industry Institute Interaction',
+    category: 'institution-related-external',
+    description: 'Industry Institute Interaction - MoUs / Centre of Excellence',
+    compliance: 'Minimum of 2 in five',
+    score: 20,
+    totalMarks: 100,
+    completed: false,
+    documents: [],
+    deadline: '2024-12-31',
+    status: 'not-started',
+  }
 ];
 
 export const AppraisalTasks: React.FC = () => {
@@ -130,7 +187,6 @@ export const AppraisalTasks: React.FC = () => {
   const { toast } = useToast();
   const { user } = useAuth();
   
-  // Calculate progress
   const completedTasks = tasks.filter(task => task.completed).length;
   const totalTasks = tasks.length;
   const progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
@@ -139,7 +195,6 @@ export const AppraisalTasks: React.FC = () => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate saving with a delay
     setTimeout(() => {
       const newTask = {
         id: Date.now(),
@@ -148,6 +203,7 @@ export const AppraisalTasks: React.FC = () => {
         description: newTaskDescription,
         compliance: newTaskCompliance,
         score: newTaskScore,
+        totalMarks: 0,
         completed: false,
         documents: [] as string[],
         deadline: newTaskDeadline,
@@ -156,7 +212,6 @@ export const AppraisalTasks: React.FC = () => {
       
       setTasks([...tasks, newTask]);
       
-      // Reset form
       setNewTaskTitle('');
       setNewTaskCategory('');
       setNewTaskDescription('');
@@ -187,7 +242,6 @@ export const AppraisalTasks: React.FC = () => {
   };
   
   const handleFileUpload = (taskId: number) => {
-    // Simulate file upload
     const mockFileName = `file_${Date.now()}.pdf`;
     
     setTasks(tasks.map(task => 
@@ -213,7 +267,6 @@ export const AppraisalTasks: React.FC = () => {
   const handleSubmitAppraisal = () => {
     setIsSubmittingAppraisal(true);
     
-    // Simulate submission delay
     setTimeout(() => {
       toast({
         title: "Appraisal Submitted",
@@ -238,6 +291,10 @@ export const AppraisalTasks: React.FC = () => {
             ? task.category === 'faculty-related-internal'
             : activeTab === 'faculty-related-external'
             ? task.category === 'faculty-related-external'
+            : activeTab === 'institution-related-internal'
+            ? task.category === 'institution-related-internal'
+            : activeTab === 'institution-related-external'
+            ? task.category === 'institution-related-external'
             : true
       );
   
@@ -303,6 +360,8 @@ export const AppraisalTasks: React.FC = () => {
           <TabsTrigger value="students-related-external">Students External</TabsTrigger>
           <TabsTrigger value="faculty-related-internal">Faculty Internal</TabsTrigger>
           <TabsTrigger value="faculty-related-external">Faculty External</TabsTrigger>
+          <TabsTrigger value="institution-related-internal">Institution Internal</TabsTrigger>
+          <TabsTrigger value="institution-related-external">Institution External</TabsTrigger>
           <TabsTrigger value="add-task">Add Task</TabsTrigger>
         </TabsList>
         
@@ -357,12 +416,8 @@ export const AppraisalTasks: React.FC = () => {
                     
                     <div className="grid grid-cols-2 gap-4 mt-2">
                       <div className="text-sm">
-                        <span className="text-muted-foreground">Compliance: </span>
-                        <span className="font-medium">{task.compliance}</span>
-                      </div>
-                      <div className="text-sm">
                         <span className="text-muted-foreground">Score: </span>
-                        <span className="font-medium">{task.score}</span>
+                        <span className="font-medium">{task.score}/{task.totalMarks}</span>
                       </div>
                     </div>
                     
@@ -423,7 +478,6 @@ export const AppraisalTasks: React.FC = () => {
           )}
         </TabsContent>
         
-        {/* Document Viewer Dialog */}
         <Dialog open={!!viewingDocument} onOpenChange={(open) => !open && setViewingDocument(null)}>
           <DialogContent className="max-w-3xl">
             <DialogHeader>
@@ -460,7 +514,6 @@ export const AppraisalTasks: React.FC = () => {
         </Dialog>
         
         <TabsContent value="completed" className="space-y-4 mt-6">
-          {/* This tab uses filteredTasks which is handled by the activeTab state */}
           {filteredTasks.length === 0 && (
             <div className="text-center p-12">
               <CheckCircle2 className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
@@ -473,7 +526,6 @@ export const AppraisalTasks: React.FC = () => {
         </TabsContent>
         
         <TabsContent value="pending" className="space-y-4 mt-6">
-          {/* This tab uses filteredTasks which is handled by the activeTab state */}
           {filteredTasks.length === 0 && (
             <div className="text-center p-12">
               <CheckCircle2 className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
@@ -485,9 +537,7 @@ export const AppraisalTasks: React.FC = () => {
           )}
         </TabsContent>
         
-        {/* Category specific tabs */}
         <TabsContent value="students-related-external" className="space-y-4 mt-6">
-          {/* This tab uses filteredTasks which is handled by the activeTab state */}
           {filteredTasks.length === 0 && (
             <div className="text-center p-12">
               <CheckCircle2 className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
@@ -500,7 +550,6 @@ export const AppraisalTasks: React.FC = () => {
         </TabsContent>
         
         <TabsContent value="faculty-related-internal" className="space-y-4 mt-6">
-          {/* This tab uses filteredTasks which is handled by the activeTab state */}
           {filteredTasks.length === 0 && (
             <div className="text-center p-12">
               <CheckCircle2 className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
@@ -513,11 +562,34 @@ export const AppraisalTasks: React.FC = () => {
         </TabsContent>
         
         <TabsContent value="faculty-related-external" className="space-y-4 mt-6">
-          {/* This tab uses filteredTasks which is handled by the activeTab state */}
           {filteredTasks.length === 0 && (
             <div className="text-center p-12">
               <CheckCircle2 className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
               <h3 className="text-lg font-medium">No Faculty Related - External tasks</h3>
+              <p className="text-sm text-muted-foreground">
+                Add tasks in this category to see them here
+              </p>
+            </div>
+          )}
+        </TabsContent>
+        
+        <TabsContent value="institution-related-internal" className="space-y-4 mt-6">
+          {filteredTasks.length === 0 && (
+            <div className="text-center p-12">
+              <CheckCircle2 className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+              <h3 className="text-lg font-medium">No Institution Related - Internal tasks</h3>
+              <p className="text-sm text-muted-foreground">
+                Add tasks in this category to see them here
+              </p>
+            </div>
+          )}
+        </TabsContent>
+        
+        <TabsContent value="institution-related-external" className="space-y-4 mt-6">
+          {filteredTasks.length === 0 && (
+            <div className="text-center p-12">
+              <CheckCircle2 className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+              <h3 className="text-lg font-medium">No Institution Related - External tasks</h3>
               <p className="text-sm text-muted-foreground">
                 Add tasks in this category to see them here
               </p>
