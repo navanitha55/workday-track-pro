@@ -398,19 +398,7 @@ export const AppraisalTasks: React.FC = () => {
       
       {/* Tasks List */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid grid-cols-7">
-          <TabsTrigger value="all-tasks">All Tasks</TabsTrigger>
-          <TabsTrigger value="completed">Completed</TabsTrigger>
-          <TabsTrigger value="pending">Pending</TabsTrigger>
-          <TabsTrigger value="students-related-external">Students External</TabsTrigger>
-          <TabsTrigger value="faculty-related-internal">Faculty Internal</TabsTrigger>
-          <TabsTrigger value="faculty-related-external">Faculty External</TabsTrigger>
-          <TabsTrigger value="institution-related-internal">Institution Internal</TabsTrigger>
-          <TabsTrigger value="institution-related-external">Institution External</TabsTrigger>
-          <TabsTrigger value="add-task">Add Task</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="all-tasks" className="space-y-4 mt-6">
+        <TabsContent value="all-tasks" className="space-y-4">
           <TaskList 
             tasks={filteredTasks}
             onTaskCompletion={handleTaskCompletion}
@@ -419,124 +407,16 @@ export const AppraisalTasks: React.FC = () => {
           />
         </TabsContent>
         
-        <Dialog open={!!viewingDocument} onOpenChange={(open) => !open && setViewingDocument(null)}>
-          <DialogContent className="max-w-3xl">
-            <DialogHeader>
-              <DialogTitle className="flex justify-between items-center">
-                <span>Document: {viewingDocument}</span>
-                <DialogClose asChild>
-                  <Button variant="ghost" size="icon">
-                    <X className="h-4 w-4" />
-                  </Button>
-                </DialogClose>
-              </DialogTitle>
-              <DialogDescription>
-                Viewing uploaded document
-              </DialogDescription>
-            </DialogHeader>
-            <div className="bg-muted p-4 rounded-md min-h-[400px] flex flex-col items-center justify-center">
-              <div className="max-w-full mx-auto bg-card p-4 rounded-lg shadow-lg">
-                <img 
-                  src="/lovable-uploads/788cbcd8-5b61-4411-ad67-9ec3ca04142a.png" 
-                  alt="Appraisal Document" 
-                  className="w-full h-auto object-contain max-h-[500px]"
-                />
-                <div className="text-center mt-4">
-                  <h2 className="text-xl font-semibold">{viewingDocument}</h2>
-                  <p className="text-muted-foreground text-sm">Faculty Semester Performance Report</p>
-                </div>
-                
-                <div className="mt-6 flex justify-center">
-                  <Button className="w-full">Download Document</Button>
-                </div>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
-        
-        <TabsContent value="completed" className="space-y-4 mt-6">
-          {filteredTasks.length === 0 && (
-            <div className="text-center p-12">
-              <CheckCircle2 className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-              <h3 className="text-lg font-medium">No completed tasks</h3>
-              <p className="text-sm text-muted-foreground">
-                Tasks you complete will appear here
-              </p>
-            </div>
-          )}
-        </TabsContent>
-        
-        <TabsContent value="pending" className="space-y-4 mt-6">
-          {filteredTasks.length === 0 && (
-            <div className="text-center p-12">
-              <CheckCircle2 className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-              <h3 className="text-lg font-medium">No pending tasks</h3>
-              <p className="text-sm text-muted-foreground">
-                All of your tasks have been completed
-              </p>
-            </div>
-          )}
-        </TabsContent>
-        
-        <TabsContent value="students-related-external" className="space-y-4 mt-6">
-          {filteredTasks.length === 0 && (
-            <div className="text-center p-12">
-              <CheckCircle2 className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-              <h3 className="text-lg font-medium">No Students Related - External tasks</h3>
-              <p className="text-sm text-muted-foreground">
-                Add tasks in this category to see them here
-              </p>
-            </div>
-          )}
-        </TabsContent>
-        
-        <TabsContent value="faculty-related-internal" className="space-y-4 mt-6">
-          {filteredTasks.length === 0 && (
-            <div className="text-center p-12">
-              <CheckCircle2 className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-              <h3 className="text-lg font-medium">No Faculty Related - Internal tasks</h3>
-              <p className="text-sm text-muted-foreground">
-                Add tasks in this category to see them here
-              </p>
-            </div>
-          )}
-        </TabsContent>
-        
-        <TabsContent value="faculty-related-external" className="space-y-4 mt-6">
-          {filteredTasks.length === 0 && (
-            <div className="text-center p-12">
-              <CheckCircle2 className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-              <h3 className="text-lg font-medium">No Faculty Related - External tasks</h3>
-              <p className="text-sm text-muted-foreground">
-                Add tasks in this category to see them here
-              </p>
-            </div>
-          )}
-        </TabsContent>
-        
-        <TabsContent value="institution-related-internal" className="space-y-4 mt-6">
-          {filteredTasks.length === 0 && (
-            <div className="text-center p-12">
-              <CheckCircle2 className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-              <h3 className="text-lg font-medium">No Institution Related - Internal tasks</h3>
-              <p className="text-sm text-muted-foreground">
-                Add tasks in this category to see them here
-              </p>
-            </div>
-          )}
-        </TabsContent>
-        
-        <TabsContent value="institution-related-external" className="space-y-4 mt-6">
-          {filteredTasks.length === 0 && (
-            <div className="text-center p-12">
-              <CheckCircle2 className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-              <h3 className="text-lg font-medium">No Institution Related - External tasks</h3>
-              <p className="text-sm text-muted-foreground">
-                Add tasks in this category to see them here
-              </p>
-            </div>
-          )}
-        </TabsContent>
+        {categories.map(category => (
+          <TabsContent key={category.id} value={category.id} className="space-y-4">
+            <TaskList 
+              tasks={filteredTasks}
+              onTaskCompletion={handleTaskCompletion}
+              onFileUpload={handleFileUpload}
+              onViewDocument={handleViewDocument}
+            />
+          </TabsContent>
+        ))}
         
         <TabsContent value="add-task">
           <Card>
@@ -662,6 +542,41 @@ export const AppraisalTasks: React.FC = () => {
           </Card>
         </TabsContent>
       </Tabs>
+      
+      <Dialog open={!!viewingDocument} onOpenChange={(open) => !open && setViewingDocument(null)}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle className="flex justify-between items-center">
+              <span>Document: {viewingDocument}</span>
+              <DialogClose asChild>
+                <Button variant="ghost" size="icon">
+                  <X className="h-4 w-4" />
+                </Button>
+              </DialogClose>
+            </DialogTitle>
+            <DialogDescription>
+              Viewing uploaded document
+            </DialogDescription>
+          </DialogHeader>
+          <div className="bg-muted p-4 rounded-md min-h-[400px] flex flex-col items-center justify-center">
+            <div className="max-w-full mx-auto bg-card p-4 rounded-lg shadow-lg">
+              <img 
+                src="/lovable-uploads/788cbcd8-5b61-4411-ad67-9ec3ca04142a.png" 
+                alt="Appraisal Document" 
+                className="w-full h-auto object-contain max-h-[500px]"
+              />
+              <div className="text-center mt-4">
+                <h2 className="text-xl font-semibold">{viewingDocument}</h2>
+                <p className="text-muted-foreground text-sm">Faculty Semester Performance Report</p>
+              </div>
+              
+              <div className="mt-6 flex justify-center">
+                <Button className="w-full">Download Document</Button>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
