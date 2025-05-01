@@ -12,6 +12,14 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { format } from 'date-fns';
 import { CalendarIcon, Plus, Save, Clock } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import { 
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 // Activity types
 const activityTypes = [
@@ -23,40 +31,52 @@ const activityTypes = [
   { value: 'other', label: 'Other' },
 ];
 
+// Define periods
+const periods = [
+  { id: 1, startTime: '08:30', endTime: '09:20' },
+  { id: 2, startTime: '09:20', endTime: '10:10' },
+  { id: 3, startTime: '10:20', endTime: '11:10' },
+  { id: 4, startTime: '11:10', endTime: '12:00' },
+  { id: 5, startTime: '12:50', endTime: '13:40' },
+  { id: 6, startTime: '13:40', endTime: '14:30' },
+  { id: 7, startTime: '14:40', endTime: '15:30' },
+  { id: 8, startTime: '15:30', endTime: '16:20' },
+];
+
 // Mock timesheet entries
 const mockTimeEntries = [
   {
     id: 1,
     date: new Date('2023-04-14'),
-    hours: 3,
+    periodId: 1,
     activityType: 'teaching',
     description: 'Conducted advanced database lecture for 3rd year students',
   },
   {
     id: 2,
     date: new Date('2023-04-14'),
-    hours: 2,
+    periodId: 2,
     activityType: 'mentoring',
     description: 'Student project mentoring and guidance',
   },
   {
     id: 3,
     date: new Date('2023-04-14'),
-    hours: 3,
+    periodId: 4,
     activityType: 'research',
     description: 'Working on research paper for upcoming conference',
   },
   {
     id: 4,
     date: new Date('2023-04-13'),
-    hours: 4,
+    periodId: 3,
     activityType: 'teaching',
     description: 'Prepared and delivered programming fundamentals lecture',
   },
   {
     id: 5,
     date: new Date('2023-04-13'),
-    hours: 3.5,
+    periodId: 6,
     activityType: 'administrative',
     description: 'Department meeting and curriculum planning',
   },
@@ -65,8 +85,8 @@ const mockTimeEntries = [
 export const TimeSheet: React.FC = () => {
   const [date, setDate] = useState<Date>(new Date());
   const [timeEntries, setTimeEntries] = useState(mockTimeEntries);
-  const [activeTab, setActiveTab] = useState<string>('new-entry');
-  const [hours, setHours] = useState<string>('');
+  const [activeTab, setActiveTab] = useState<string>('view-entries');
+  const [periodId, setPeriodId] = useState<string>('');
   const [activityType, setActivityType] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -82,7 +102,7 @@ export const TimeSheet: React.FC = () => {
       const newEntry = {
         id: Date.now(),
         date: new Date(date),
-        hours: parseFloat(hours),
+        periodId: parseInt(periodId),
         activityType,
         description,
       };
@@ -90,7 +110,7 @@ export const TimeSheet: React.FC = () => {
       setTimeEntries([newEntry, ...timeEntries]);
       
       // Reset form
-      setHours('');
+      setPeriodId('');
       setActivityType('');
       setDescription('');
       
@@ -108,6 +128,11 @@ export const TimeSheet: React.FC = () => {
   const entriesForSelectedDate = timeEntries.filter(
     entry => format(entry.date, 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd')
   );
+
+  // Check if period has an entry for the selected date
+  const getPeriodEntry = (periodId: number) => {
+    return entriesForSelectedDate.find(entry => entry.periodId === periodId);
+  };
   
   // Group entries by date for history view
   const entriesByDate = timeEntries.reduce((groups, entry) => {
@@ -152,22 +177,122 @@ export const TimeSheet: React.FC = () => {
         <div className="flex-1">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="view-entries">
+                <Clock className="h-4 w-4 mr-2" />
+                View Periods
+              </TabsTrigger>
               <TabsTrigger value="new-entry">
                 <Plus className="h-4 w-4 mr-2" />
                 New Entry
               </TabsTrigger>
-              <TabsTrigger value="view-entries">
-                <Clock className="h-4 w-4 mr-2" />
-                View Entries
-              </TabsTrigger>
             </TabsList>
+            
+            <TabsContent value="view-entries">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Timesheet Periods</CardTitle>
+                  <CardDescription>
+                    Your work schedule for {format(date, 'MMMM d, yyyy')}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Period</TableHead>
+                          {periods.map((period) => (
+                            <TableHead key={period.id} className="text-center">
+                              {period.id}
+                              <div className="text-xs text-muted-foreground">
+                                {period.startTime} - {period.endTime}
+                              </div>
+                            </TableHead>
+                          ))}
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        <TableRow>
+                          <TableCell className="font-medium">Activity</TableCell>
+                          {periods.map((period) => {
+                            const entry = getPeriodEntry(period.id);
+                            return (
+                              <TableCell key={period.id} className="p-2">
+                                {entry ? (
+                                  <div 
+                                    className="bg-primary/10 rounded-md p-2 h-20 cursor-pointer text-center flex flex-col items-center justify-center text-sm hover:bg-primary/20"
+                                    onClick={() => {
+                                      setPeriodId(period.id.toString());
+                                      setActivityType(entry.activityType);
+                                      setDescription(entry.description);
+                                      setActiveTab('new-entry');
+                                    }}
+                                  >
+                                    <div className="font-medium">
+                                      {activityTypes.find(t => t.value === entry.activityType)?.label}
+                                    </div>
+                                    <div className="text-xs text-muted-foreground line-clamp-2">
+                                      {entry.description}
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div 
+                                    className="border border-dashed border-muted-foreground/20 rounded-md p-2 h-20 flex items-center justify-center cursor-pointer hover:bg-muted/30 text-muted-foreground text-sm"
+                                    onClick={() => {
+                                      setPeriodId(period.id.toString());
+                                      setActivityType('');
+                                      setDescription('');
+                                      setActiveTab('new-entry');
+                                    }}
+                                  >
+                                    + Add Activity
+                                  </div>
+                                )}
+                              </TableCell>
+                            );
+                          })}
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card className="mt-6">
+                <CardHeader>
+                  <CardTitle>Recent History</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    {Object.entries(entriesByDate)
+                      .sort((a, b) => new Date(b[0]).getTime() - new Date(a[0]).getTime())
+                      .slice(0, 5)
+                      .map(([date, entries]) => (
+                        <div key={date} className="space-y-2">
+                          <h4 className="font-medium">
+                            {format(new Date(date), 'EEEE, MMMM d, yyyy')}
+                          </h4>
+                          <div className="pl-4 border-l-2 border-muted">
+                            <p className="text-sm">
+                              Total: {entries.length} periods filled
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {entries.length} activities
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
             
             <TabsContent value="new-entry">
               <Card>
                 <CardHeader>
                   <CardTitle>Add Timesheet Entry</CardTitle>
                   <CardDescription>
-                    Record your work activities for {format(date, 'MMMM d, yyyy')}
+                    Record your work activity for {format(date, 'MMMM d, yyyy')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -196,18 +321,25 @@ export const TimeSheet: React.FC = () => {
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="hours">Hours</Label>
-                      <Input
-                        id="hours"
-                        type="number"
-                        step="0.5"
-                        min="0.5"
-                        max="12"
-                        placeholder="Enter hours worked"
-                        value={hours}
-                        onChange={(e) => setHours(e.target.value)}
+                      <Label htmlFor="period">Period</Label>
+                      <Select 
+                        value={periodId} 
+                        onValueChange={setPeriodId}
                         required
-                      />
+                      >
+                        <SelectTrigger id="period">
+                          <SelectValue placeholder="Select period" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            {periods.map((period) => (
+                              <SelectItem key={period.id} value={period.id.toString()}>
+                                Period {period.id} ({period.startTime} - {period.endTime})
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
                     </div>
                     
                     <div className="space-y-2">
@@ -249,7 +381,7 @@ export const TimeSheet: React.FC = () => {
                   <Button 
                     variant="outline" 
                     onClick={() => {
-                      setHours('');
+                      setPeriodId('');
                       setActivityType('');
                       setDescription('');
                     }}
@@ -274,79 +406,6 @@ export const TimeSheet: React.FC = () => {
                     )}
                   </Button>
                 </CardFooter>
-              </Card>
-            </TabsContent>
-            
-            <TabsContent value="view-entries">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Timesheet Entries</CardTitle>
-                  <CardDescription>
-                    Your work activities for {format(date, 'MMMM d, yyyy')}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {entriesForSelectedDate.length > 0 ? (
-                    <div className="space-y-4">
-                      {entriesForSelectedDate.map((entry) => (
-                        <div key={entry.id} className="border rounded-md p-4 card-hover">
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <h4 className="font-medium">
-                                {activityTypes.find(t => t.value === entry.activityType)?.label}
-                              </h4>
-                              <p className="text-sm text-muted-foreground mt-1">
-                                {entry.description}
-                              </p>
-                            </div>
-                            <div className="bg-primary/10 text-primary font-medium px-2 py-1 rounded-md">
-                              {entry.hours} hrs
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                      <div className="flex justify-end pt-2 font-medium">
-                        Total: {entriesForSelectedDate.reduce((sum, entry) => sum + entry.hours, 0)} hours
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="text-center p-8">
-                      <Clock className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-                      <h3 className="text-lg font-medium">No entries for this date</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Switch to "New Entry" tab to add a timesheet entry.
-                      </p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-              
-              <Card className="mt-6">
-                <CardHeader>
-                  <CardTitle>Recent History</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-6">
-                    {Object.entries(entriesByDate)
-                      .sort((a, b) => new Date(b[0]).getTime() - new Date(a[0]).getTime())
-                      .slice(0, 5)
-                      .map(([date, entries]) => (
-                        <div key={date} className="space-y-2">
-                          <h4 className="font-medium">
-                            {format(new Date(date), 'EEEE, MMMM d, yyyy')}
-                          </h4>
-                          <div className="pl-4 border-l-2 border-muted">
-                            <p className="text-sm">
-                              Total: {entries.reduce((sum, entry) => sum + entry.hours, 0)} hours
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              {entries.length} activities
-                            </p>
-                          </div>
-                        </div>
-                      ))}
-                  </div>
-                </CardContent>
               </Card>
             </TabsContent>
           </Tabs>
